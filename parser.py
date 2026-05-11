@@ -3,6 +3,11 @@ import requests
 import lxml
 import config
 import random
+import os
+
+result_folder = "results"
+os.makedirs(result_folder, exist_ok=True)
+
 
 def get_headers():
     """Формирует случайную комбинацию хэдеров для запроса"""
@@ -25,12 +30,13 @@ def search_product(product):
         return url_list
     
     urls = create_url(product)
-    responses = []
 
     for url, params in urls:
         response = requests.get(url, params=params)
-        responses.append(response)
+        # response_data = response.text
+        filename = url.split("//")[1].split("/")[0] 
+        with open(f"{result_folder}/{filename}_response.html", "w", encoding="utf-8") as file:
+            file.write(response.text)
         print(f"Получил {response.url}, статус: {response.status_code}")
-    return responses
-result = search_product("iphone 11")
-
+    return
+test_result = search_product("iphone 11")

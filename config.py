@@ -28,6 +28,7 @@ search_settings = {
         "params": {
             "searchFor": "products",
             "s_categoryid": "0",
+            "filter": "retail"
         },
         "keyword_param": "s_keywords"
     },
