@@ -30,7 +30,8 @@ search_settings = {
             "s_categoryid": "0",
             "filter": "retail"
         },
-        "keyword_param": "s_keywords"
+        "keyword_param": "s_keywords",
+        "page_param": "page"
     },
     "onliner": {
         "search_url": "https://catalog.onliner.by/search",

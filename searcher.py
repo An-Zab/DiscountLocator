@@ -3,6 +3,7 @@ import config
 import random
 import os
 import time
+import parser
 
 result_folder = "results"
 os.makedirs(result_folder, exist_ok=True)
@@ -33,10 +34,22 @@ def search_product(product):
     for url, params in urls:
         time.sleep(random.uniform(1,3))
         response = requests.get(url, params=params)
-        # response_data = response.text
-        filename = url.split("//")[1].split("/")[0] 
-        with open(f"{result_folder}/{filename}_response.html", "w", encoding="utf-8") as file:
-            file.write(response.text)
         print(f"Получил {response.url}, статус: {response.status_code}")
+        filename = url.split("//")[1].split("/")[0]
+        #Сплитим URL, чтобы сделать понятное название сохраняемого файла
+        total_pages = parser.get_page_max_num(response.text)
+
+        
+        with open(f"{result_folder}/{filename}_1_response.html", "w", encoding="utf-8") as file:
+                file.write(response.text)
+        for page_num in range(2, total_pages + 1):
+            params = params.copy()
+            params['page'] = page_num
+            time.sleep(random.uniform(1,3))
+            response = requests.get(url, params=params)
+            print(f"Получил {response.url}, статус: {response.status_code}")
+            with open(f"{result_folder}/{filename}_{page_num}_response.html", "w", encoding="utf-8") as file:
+                file.write(response.text)
+        
     return
 test_result = search_product("iphone 11")
