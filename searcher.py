@@ -56,8 +56,8 @@ def search_product(product):
                 file.write(response.text)
             offer_list.extend(parser.receive_offer_place(response.text))
 
-            with open(f"{result_folder}/offer_list.json", "w", encoding="utf-8") as file:
-                json.dump(offer_list, file, indent=2, ensure_ascii=False)
+        with open(f"{result_folder}/offer_list.json", "w", encoding="utf-8") as file:
+            json.dump(offer_list, file, indent=2, ensure_ascii=False)
     return offer_list
 test_result = search_product("iphone 11")
 print(test_result)
