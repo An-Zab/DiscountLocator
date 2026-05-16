@@ -12,14 +12,19 @@ def get_page_max_num(htmlpage):
         return 1
 
 
-# with open('results/1k.by_1_response.html', 'r', encoding='UTF-8') as file:
+# with open('results/catalog.onliner.by_1_response.html', 'r', encoding='UTF-8') as file:
 #     html_page_content = file.read()	
 
+# 1k.by_2_response.html
+# catalog.onliner.by_1_response.html
 def receive_offer_place(htmlpage):
     soup = BeautifulSoup(htmlpage, 'lxml')
     links = []
-    for link in soup.find_all(class_="prod__ext"):
-        links.append(link.get('href'))
+    for link in soup.find_all(class_={"prod__ext", "button-style button-style_secondary button-style_small-alter catalog-form__button catalog-form__button_min-width_xxxss"}):
+        href = link.get('href')
+        if href and ('/offers/' in href or '/prices' in href):
+            links.append(href)
+        # links.append(link.get('href'))  
     return links
 
 # print(receive_offer_place(html_page_content))
