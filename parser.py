@@ -29,10 +29,35 @@ def receive_offer_place(htmlpage):
 
 
 def receive_contact_info(htmlpage):
+    contact_info = []
     soup = BeautifulSoup(htmlpage, 'lxml')
-    for link in soup.find_all(attrs={"data-communicationinfourl": True}):
-        api_link = link.get('data-communicationinfourl') 
-        full_url = "https://1k.by" + api_link
-        print(full_url)
-response = requests.get('https://phone.1k.by/mobile/apple/Apple_iPhone_11_64GB-3828705/offers/')
-receive_contact_info(response.text)
+
+    for seller in soup.find_all('section', class_='seller'):
+        shop = {}
+        
+        # Находит название продавца
+        logo = seller.find('img', class_='seller__logo')
+        shop['name'] = logo['alt'].strip() 
+        
+        
+        # Находит цену товара
+        price_tag = seller.find(class_='seller__price')
+        shop['price'] = price_tag.text.strip() if price_tag else 'Нет цены'
+
+        # Находит контакты через API
+        contacts = seller.find(attrs={"data-communicationinfourl": True})
+        if contacts:
+            api_link = contacts.get('data-communicationinfourl') 
+            full_url = "https://1k.by" + api_link
+            response = requests.get(full_url)
+            shop['phones'] = list(set(re.findall(r'tel:(\+\d+)', response.text)))
+            shop['telegram'] = list(set(re.findall(r'@[\w.]+', response.text)))
+        else:
+            shop['phones'] = []
+            shop['telegram'] = []
+        
+        contact_info.append(shop)
+
+    return contact_info
+
+

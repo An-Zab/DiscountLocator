@@ -21,6 +21,8 @@ def get_headers():
 def search_product(product):
     offer_list = []
     url_list = []
+    all_contacts = []
+
     def create_url(product):
         """Формирует список кортежей (search_url, {params и изменённый keyword_param}) 
         для requests.get()"""
@@ -58,6 +60,18 @@ def search_product(product):
 
         with open(f"{result_folder}/offer_list.json", "w", encoding="utf-8") as file:
             json.dump(offer_list, file, indent=2, ensure_ascii=False)
-    return offer_list
+
+    #Добавил срез списка для тестов
+    for offer_url in offer_list[:3]:
+        if '1k.by' in offer_url:
+            time.sleep(random.uniform(1, 2))
+            response = requests.get(offer_url)
+            shops = parser.receive_contact_info(response.text)
+            all_contacts.extend(shops)
+
+    with open(f"{result_folder}/contacts.json", "w", encoding="utf-8") as file:
+        json.dump(all_contacts, file, indent=2, ensure_ascii=False)
+
+    return offer_list, all_contacts
 test_result = search_product("iphone 11")
 print(test_result)
