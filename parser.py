@@ -12,10 +12,6 @@ def get_page_max_num(htmlpage):
     else:
         return 1
 
-
-# with open('results/catalog.onliner.by_1_response.html', 'r', encoding='UTF-8') as file:
-#     html_page_content = file.read()	
-
 def receive_offer_place(htmlpage):
     soup = BeautifulSoup(htmlpage, 'lxml')
     links = []
@@ -25,43 +21,34 @@ def receive_offer_place(htmlpage):
             links.append(href) 
     return links
 
-# print(receive_offer_place(html_page_content))
-
-
-def receive_contact_info(htmlpage):
+def receive_contact_info_from_1k(htmlpage):
     contact_info = []
     soup = BeautifulSoup(htmlpage, 'lxml')
 
     for seller in soup.find_all('section', class_='seller'):
         shop = {}
         
-        # Находит точное наименование товара
         product_tag = soup.find_all('a', class_='crumbs__it')
         product_name = product_tag[-1].text.strip() if product_tag else 'Неизвестный товар'
         shop['product'] = product_name
 
-        # Находит название продавца
         logo = seller.find('img', class_='seller__logo')
-        shop['name'] = logo['alt'].strip() 
+        shop['shop_name'] = logo['alt'].strip() 
         
-        
-        # Находит цену товара
         price_tag = seller.find(class_='seller__price')
-        shop['price'] = price_tag.text.strip() if price_tag else 'Нет цены'
+        shop['product_price'] = price_tag.text.strip() if price_tag else 'Нет цены'
 
-        # Находит контакты через API
         contacts = seller.find(attrs={"data-communicationinfourl": True})
         if contacts:
             api_link = contacts.get('data-communicationinfourl') 
             full_url = "https://1k.by" + api_link
             response = requests.get(full_url)
-            shop['phones'] = list(set(re.findall(r'tel:(\+\d+)', response.text)))
-            shop['social_media'] = list(set(re.findall(r'[\w.]+@[\w.]+', response.text)))
+            shop['shop_phones'] = list(set(re.findall(r'tel:(\+\d+)', response.text)))
+            shop['shop_social_media'] = list(set(re.findall(r'[\w.]+@[\w.]+', response.text)))
         else:
             shop['phones'] = []
             shop['social_media'] = []
         
-        # Находит карточку продавца
         shop_link = seller.find('a', class_='seller__link')
         shop['url'] = shop_link['href'] if shop_link else None
 
@@ -69,4 +56,52 @@ def receive_contact_info(htmlpage):
 
     return contact_info
 
+def parse_onliner_search(htmlpage):
+    soup = BeautifulSoup(htmlpage, 'lxml')
+    
+    # Названия из h3
+    names = []
+    for h3 in soup.find_all('h3'):
+        text = h3.text.strip()
+        if text:
+            names.append(text)
+    
+    # API-URL'ы из __NUXT__
+    urls = re.findall(r'"url":"(https:\\u002F\\u002Fshop\.api\.onliner\.by\\u002Fproducts\\u002F[^"]+)"', htmlpage)
+    
+    products = []
+    for i in range(min(len(names), len(urls))):
+        clean_url = urls[i].replace('\\u002F', '/')
+        products.append({'name': names[i], 'api_url': clean_url})
+    
+    return products
+
+def receive_contact_info_from_onliner(product_url, product_name=''):
+    server_response = requests.get(product_url)
+    data = server_response.json()
+    shops = data.get('shops', {})
+    positions = data.get('positions', {}).get('primary', [])
+    
+    contact_info = []
+    for pos in positions:
+        shop_id = str(pos['shop_id'])
+        shop = shops.get(shop_id, {})
+        
+        shop_data = {
+            'product': product_name,
+            'shop_name': shop.get('title', 'Неизвестный'),
+            'product_price': pos['position_price']['amount'] + ' б.р.',
+            'url': shop.get('html_url', ''),
+            'shop_phones': shop.get('schema_phones', []),
+            'shop_social_media': [],
+        }
+        contact_info.append(shop_data)
+        
+    return contact_info
+
+
+# test_html = '''"url":"https:\\u002F\\u002Fshop.api.onliner.by\\u002Fproducts\\u002Fiphone1164b\\u002Fpositions"'''
+# test_html = '<h3>Телефон Apple iPhone 11 64GB (черный)</h3>' + test_html
+
+# print(parse_onliner_search(test_html))
 

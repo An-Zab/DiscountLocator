@@ -5,6 +5,8 @@ import os
 import time
 import parser
 import json
+from bs4 import BeautifulSoup
+import re
 
 result_folder = "results"
 os.makedirs(result_folder, exist_ok=True)
@@ -39,6 +41,24 @@ def search_product(product):
         time.sleep(random.uniform(1,3))
         response = requests.get(url, params=params)
         print(f"Получил {response.url}, статус: {response.status_code}")
+
+    
+        if 'onliner.by' in url:
+            # Ищем все упоминания shop.api.onliner.by и выводим
+            matches = re.findall(r'shop\.api\.onliner\.by\\u002Fproducts\\u002F[^\s"\']+', response.text)
+            for m in matches:
+                clean_url = 'https://' + m.replace('\\u002F', '/')
+                shops = parser.receive_contact_info_from_onliner(clean_url)
+                all_contacts.extend(shops)
+            continue
+            products = parser.parse_onliner_search(response.text)
+            print(f"Найдено товаров: {len(products)}")
+            for prod in products:
+                time.sleep(random.uniform(1, 2))
+                shops = parser.receive_contact_info_from_onliner(prod['api_url'], prod['name'])
+                all_contacts.extend(shops)
+            continue
+
         filename = url.split("//")[1].split("/")[0]
         #Сплитим URL, чтобы сделать понятное название сохраняемого файла
         total_pages = parser.get_page_max_num(response.text)
@@ -62,15 +82,15 @@ def search_product(product):
             json.dump(offer_list, file, indent=2, ensure_ascii=False)
 
     #Добавил срез списка для тестов
-    for offer_url in offer_list[:3]:
-        if '1k.by' in offer_url:
-            time.sleep(random.uniform(1, 2))
-            response = requests.get(offer_url)
-            shops = parser.receive_contact_info(response.text)
-            all_contacts.extend(shops)
+    # for offer_url in offer_list[:3]:
+    #     if '1k.by' in offer_url:
+    #         time.sleep(random.uniform(1, 2))
+    #         response = requests.get(offer_url)
+    #         shops = parser.receive_contact_info_from_1k(response.text)
+    #         all_contacts.extend(shops)
 
     with open(f"{result_folder}/contacts.json", "w", encoding="utf-8") as file:
-        json.dump(all_contacts, file, indent=4, ensure_ascii=False)
+        json.dump(all_contacts, file, indent=2, ensure_ascii=False)
 
     return offer_list, all_contacts
 test_result = search_product("iphone 11")
