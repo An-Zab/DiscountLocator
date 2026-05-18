@@ -6,18 +6,10 @@ import time
 import parser
 import json
 from bs4 import BeautifulSoup
-import re
+from utils import get_headers
 
 result_folder = "results"
 os.makedirs(result_folder, exist_ok=True)
-
-
-def get_headers():
-    """Формирует случайную комбинацию хэдеров для запроса"""
-    headers = {}
-    for key, value in config.user_settings.items():
-        headers[key] = random.choice(value)
-    return headers
 
 
 def search_product(product):
@@ -39,7 +31,7 @@ def search_product(product):
 
     for url, params in urls:
         time.sleep(random.uniform(1,3))
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, headers=get_headers())
         print(f"Получил {response.url}, статус: {response.status_code}")
 
     
@@ -65,7 +57,7 @@ def search_product(product):
             params = params.copy()
             params['page'] = page_num
             time.sleep(random.uniform(1,3))
-            response = requests.get(url, params=params)
+            response = requests.get(url, params=params, headers=get_headers())
             print(f"Получил {response.url}, статус: {response.status_code}")
             
             with open(f"{result_folder}/{filename}_{page_num}_response.html", "w", encoding="utf-8") as file:
@@ -76,10 +68,10 @@ def search_product(product):
             json.dump(offer_list, file, indent=2, ensure_ascii=False)
 
     # Добавил срез списка для тестов
-    for offer_url in offer_list[:3]:
+    for offer_url in offer_list[:7]:
         if '1k.by' in offer_url:
             time.sleep(random.uniform(1, 2))
-            response = requests.get(offer_url)
+            response = requests.get(offer_url,headers=get_headers())
             shops = parser.receive_contact_info_from_1k(response.text)
             all_contacts.extend(shops)
 
@@ -87,5 +79,5 @@ def search_product(product):
         json.dump(all_contacts, file, indent=2, ensure_ascii=False)
 
     return offer_list, all_contacts
-test_result = search_product("iphone 11")
+test_result = search_product("macbook Air 15 M4 16/256")
 print(test_result)

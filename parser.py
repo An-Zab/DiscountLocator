@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import re
 import json
 import requests
+from utils import get_headers
 
 def get_page_max_num(htmlpage):
     """Определяет число страниц-результатов поиска по классу paging__it"""
@@ -42,7 +43,7 @@ def receive_contact_info_from_1k(htmlpage):
         if contacts:
             api_link = contacts.get('data-communicationinfourl') 
             full_url = "https://1k.by" + api_link
-            response = requests.get(full_url)
+            response = requests.get(full_url, headers=get_headers())
             shop['shop_phones'] = list(set(re.findall(r'tel:(\+\d+)', response.text)))
             shop['shop_social_media'] = list(set(re.findall(r'[\w.]+@[\w.]+', response.text)))
         else:
