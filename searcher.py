@@ -44,13 +44,6 @@ def search_product(product):
 
     
         if 'onliner.by' in url:
-            # Ищем все упоминания shop.api.onliner.by и выводим
-            matches = re.findall(r'shop\.api\.onliner\.by\\u002Fproducts\\u002F[^\s"\']+', response.text)
-            for m in matches:
-                clean_url = 'https://' + m.replace('\\u002F', '/')
-                shops = parser.receive_contact_info_from_onliner(clean_url)
-                all_contacts.extend(shops)
-            continue
             products = parser.parse_onliner_search(response.text)
             print(f"Найдено товаров: {len(products)}")
             for prod in products:
@@ -58,6 +51,7 @@ def search_product(product):
                 shops = parser.receive_contact_info_from_onliner(prod['api_url'], prod['name'])
                 all_contacts.extend(shops)
             continue
+
 
         filename = url.split("//")[1].split("/")[0]
         #Сплитим URL, чтобы сделать понятное название сохраняемого файла
@@ -81,13 +75,13 @@ def search_product(product):
         with open(f"{result_folder}/offer_list.json", "w", encoding="utf-8") as file:
             json.dump(offer_list, file, indent=2, ensure_ascii=False)
 
-    #Добавил срез списка для тестов
-    # for offer_url in offer_list[:3]:
-    #     if '1k.by' in offer_url:
-    #         time.sleep(random.uniform(1, 2))
-    #         response = requests.get(offer_url)
-    #         shops = parser.receive_contact_info_from_1k(response.text)
-    #         all_contacts.extend(shops)
+    # Добавил срез списка для тестов
+    for offer_url in offer_list[:3]:
+        if '1k.by' in offer_url:
+            time.sleep(random.uniform(1, 2))
+            response = requests.get(offer_url)
+            shops = parser.receive_contact_info_from_1k(response.text)
+            all_contacts.extend(shops)
 
     with open(f"{result_folder}/contacts.json", "w", encoding="utf-8") as file:
         json.dump(all_contacts, file, indent=2, ensure_ascii=False)

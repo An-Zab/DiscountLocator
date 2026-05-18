@@ -67,12 +67,12 @@ def parse_onliner_search(htmlpage):
             names.append(text)
     
     # API-URL'ы из __NUXT__
-    urls = re.findall(r'"url":"(https:\\u002F\\u002Fshop\.api\.onliner\.by\\u002Fproducts\\u002F[^"]+)"', htmlpage)
+    urls = re.findall(r'shop\.api\.onliner\.by\\u002Fproducts\\u002F[^\s"\']+', htmlpage)
     
     products = []
-    for i in range(min(len(names), len(urls))):
-        clean_url = urls[i].replace('\\u002F', '/')
-        products.append({'name': names[i], 'api_url': clean_url})
+    for name, url in zip(names, urls):
+        clean_url = 'https://' + url.replace('\\u002F', '/')
+        products.append({'name': name, 'api_url': clean_url})
     
     return products
 
