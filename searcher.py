@@ -70,7 +70,7 @@ def search_product(product):
             all_contacts.extend(shops)
 
     with open(f"{result_folder}/contacts.json", "w", encoding="utf-8") as file:
-        json.dump(all_contacts, file, indent=2, ensure_ascii=False)
+        json.dump(all_contacts, file, indent=4, ensure_ascii=False)
 
     return offer_list, all_contacts
 test_result = search_product("iphone 11")

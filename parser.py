@@ -51,11 +51,15 @@ def receive_contact_info(htmlpage):
             full_url = "https://1k.by" + api_link
             response = requests.get(full_url)
             shop['phones'] = list(set(re.findall(r'tel:(\+\d+)', response.text)))
-            shop['telegram'] = list(set(re.findall(r'@[\w.]+', response.text)))
+            shop['social_media'] = list(set(re.findall(r'[\w.]+@[\w.]+', response.text)))
         else:
             shop['phones'] = []
-            shop['telegram'] = []
+            shop['social_media'] = []
         
+        # Находит карточку продавца
+        shop_link = seller.find('a', class_='seller__link')
+        shop['url'] = shop_link['href'] if shop_link else None
+
         contact_info.append(shop)
 
     return contact_info
