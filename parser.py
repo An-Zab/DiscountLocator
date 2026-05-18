@@ -35,6 +35,11 @@ def receive_contact_info(htmlpage):
     for seller in soup.find_all('section', class_='seller'):
         shop = {}
         
+        # Находит точное наименование товара
+        product_tag = soup.find_all('a', class_='crumbs__it')
+        product_name = product_tag[-1].text.strip() if product_tag else 'Неизвестный товар'
+        shop['product'] = product_name
+
         # Находит название продавца
         logo = seller.find('img', class_='seller__logo')
         shop['name'] = logo['alt'].strip() 
