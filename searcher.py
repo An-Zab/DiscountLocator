@@ -31,16 +31,18 @@ def search_product(product):
 
     for url, params in urls:
         time.sleep(random.uniform(1,3))
-        response = requests.get(url, params=params, headers=get_headers())
+        if 'onliner.by' in url:
+            response = requests.get(url, params=params)  # без headers
+        else:
+            response = requests.get(url, params=params, headers=get_headers())
         print(f"Получил {response.url}, статус: {response.status_code}")
-
     
         if 'onliner.by' in url:
             products = parser.parse_onliner_search(response.text)
             print(f"Найдено товаров: {len(products)}")
             for prod in products:
                 time.sleep(random.uniform(1, 2))
-                shops = parser.receive_contact_info_from_onliner(prod['api_url'], prod['name'])
+                shops = parser.receive_contact_info_from_onliner(prod['api_url'], prod['name'], prod.get('html_url', ''))
                 all_contacts.extend(shops)
             continue
 
@@ -80,4 +82,4 @@ def search_product(product):
 
     return offer_list, all_contacts
 test_result = search_product("macbook Air 15 M4 16/256")
-print(test_result)
+# print(test_result)

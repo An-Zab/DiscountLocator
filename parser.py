@@ -59,25 +59,46 @@ def receive_contact_info_from_1k(htmlpage):
 
 def parse_onliner_search(htmlpage):
     soup = BeautifulSoup(htmlpage, 'lxml')
-    
-    # Названия из h3
+
+    # Названия товаров из тегов <h3>
     names = []
     for h3 in soup.find_all('h3'):
         text = h3.text.strip()
         if text:
             names.append(text)
-    
-    # API-URL'ы из __NUXT__
-    urls = re.findall(r'shop\.api\.onliner\.by\\u002Fproducts\\u002F[^\s"\']+', htmlpage)
-    
+
+    # СОБИРАЕМ API-ССЫЛКИ (для получения магазинов/цен)
+    # Ищем URL типа: https://shop.api.onliner.by/products/.../positions
+    api_urls = re.findall(
+        r'https:\\u002F\\u002Fshop\.api\.onliner\.by\\u002Fproducts\\u002F[^"]+?positions',
+        htmlpage
+    )
+
+    # СОБИРАЕМ ССЫЛКИ НА СТРАНИЦУ ТОВАРА (placement)
+    # Ищем URL типа: https://catalog.onliner.by/.../.../prices
+    placement_urls = re.findall(
+        r'https:\\u002F\\u002Fcatalog\.onliner\.by\\u002F[^"]+?\\u002Fprices',
+        htmlpage
+    )
+
+
+    # СОБИРАЕМ ВСЁ ВМЕСТЕ
     products = []
-    for name, url in zip(names, urls):
-        clean_url = 'https://' + url.replace('\\u002F', '/')
-        products.append({'name': name, 'api_url': clean_url})
-    
+    for name, api_url, placement in zip(names, api_urls, placement_urls):
+        # Заменяем \u002F на обычный слэш /
+        clean_api_url = api_url.replace('\\u002F', '/')
+        clean_placement = placement.replace('\\u002F', '/')
+
+
+        products.append({
+            'name': name,           # Название товара
+            'api_url': clean_api_url,  # API для получения магазинов
+            'html_url': clean_placement  # Ссылка на страницу товара (placement)
+        })
+
     return products
 
-def receive_contact_info_from_onliner(product_url, product_name=''):
+def receive_contact_info_from_onliner(product_url, product_name='', placement=''):
     server_response = requests.get(product_url)
     data = server_response.json()
     shops = data.get('shops', {})
@@ -88,10 +109,12 @@ def receive_contact_info_from_onliner(product_url, product_name=''):
         shop_id = str(pos['shop_id'])
         shop = shops.get(shop_id, {})
         
+        clean_product_url = placement
         shop_data = {
             'product': product_name,
             'shop_name': shop.get('title', 'Неизвестный'),
             'product_price': pos['position_price']['amount'] + ' б.р.',
+            'placement': clean_product_url,
             'url': shop.get('html_url', ''),
             'shop_phones': shop.get('schema_phones', []),
             'shop_social_media': [],
