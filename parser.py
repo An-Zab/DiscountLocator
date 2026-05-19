@@ -1,3 +1,5 @@
+# parser.py
+
 from bs4 import BeautifulSoup
 import re
 import json
@@ -22,7 +24,7 @@ def receive_offer_place(htmlpage):
             links.append(href) 
     return links
 
-def receive_contact_info_from_1k(htmlpage):
+def receive_contact_info_from_1k(htmlpage, placement=''):
     contact_info = []
     soup = BeautifulSoup(htmlpage, 'lxml')
 
@@ -38,7 +40,8 @@ def receive_contact_info_from_1k(htmlpage):
         
         price_tag = seller.find(class_='seller__price')
         shop['product_price'] = price_tag.text.strip() if price_tag else 'Нет цены'
-
+        shop['placement'] = placement
+        
         contacts = seller.find(attrs={"data-communicationinfourl": True})
         if contacts:
             api_link = contacts.get('data-communicationinfourl') 
@@ -60,40 +63,32 @@ def receive_contact_info_from_1k(htmlpage):
 def parse_onliner_search(htmlpage):
     soup = BeautifulSoup(htmlpage, 'lxml')
 
-    # Названия товаров из тегов <h3>
     names = []
     for h3 in soup.find_all('h3'):
         text = h3.text.strip()
         if text:
             names.append(text)
 
-    # СОБИРАЕМ API-ССЫЛКИ (для получения магазинов/цен)
-    # Ищем URL типа: https://shop.api.onliner.by/products/.../positions
+    # API URL для получения магазинов/цен
     api_urls = re.findall(
         r'https:\\u002F\\u002Fshop\.api\.onliner\.by\\u002Fproducts\\u002F[^"]+?positions',
         htmlpage
     )
 
-    # СОБИРАЕМ ССЫЛКИ НА СТРАНИЦУ ТОВАРА (placement)
-    # Ищем URL типа: https://catalog.onliner.by/.../.../prices
+    # Ссылки на страницу товара (placement)
     placement_urls = re.findall(
         r'https:\\u002F\\u002Fcatalog\.onliner\.by\\u002F[^"]+?\\u002Fprices',
         htmlpage
     )
 
-
-    # СОБИРАЕМ ВСЁ ВМЕСТЕ
     products = []
     for name, api_url, placement in zip(names, api_urls, placement_urls):
-        # Заменяем \u002F на обычный слэш /
         clean_api_url = api_url.replace('\\u002F', '/')
         clean_placement = placement.replace('\\u002F', '/')
-
-
         products.append({
-            'name': name,           # Название товара
-            'api_url': clean_api_url,  # API для получения магазинов
-            'html_url': clean_placement  # Ссылка на страницу товара (placement)
+            'name': name,
+            'api_url': clean_api_url,
+            'html_url': clean_placement
         })
 
     return products
@@ -109,12 +104,11 @@ def receive_contact_info_from_onliner(product_url, product_name='', placement=''
         shop_id = str(pos['shop_id'])
         shop = shops.get(shop_id, {})
         
-        clean_product_url = placement
         shop_data = {
             'product': product_name,
             'shop_name': shop.get('title', 'Неизвестный'),
             'product_price': pos['position_price']['amount'] + ' б.р.',
-            'placement': clean_product_url,
+            'placement': placement,
             'url': shop.get('html_url', ''),
             'shop_phones': shop.get('schema_phones', []),
             'shop_social_media': [],
@@ -122,10 +116,3 @@ def receive_contact_info_from_onliner(product_url, product_name='', placement=''
         contact_info.append(shop_data)
         
     return contact_info
-
-
-# test_html = '''"url":"https:\\u002F\\u002Fshop.api.onliner.by\\u002Fproducts\\u002Fiphone1164b\\u002Fpositions"'''
-# test_html = '<h3>Телефон Apple iPhone 11 64GB (черный)</h3>' + test_html
-
-# print(parse_onliner_search(test_html))
-

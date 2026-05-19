@@ -36,13 +36,18 @@ def search_product(product):
         else:
             response = requests.get(url, params=params, headers=get_headers())
         print(f"Получил {response.url}, статус: {response.status_code}")
+
     
         if 'onliner.by' in url:
             products = parser.parse_onliner_search(response.text)
             print(f"Найдено товаров: {len(products)}")
             for prod in products:
                 time.sleep(random.uniform(1, 2))
-                shops = parser.receive_contact_info_from_onliner(prod['api_url'], prod['name'], prod.get('html_url', ''))
+                shops = parser.receive_contact_info_from_onliner(
+                    prod['api_url'],
+                    prod['name'],
+                    prod['html_url']
+                )
                 all_contacts.extend(shops)
             continue
 
@@ -74,7 +79,7 @@ def search_product(product):
         if '1k.by' in offer_url:
             time.sleep(random.uniform(1, 2))
             response = requests.get(offer_url,headers=get_headers())
-            shops = parser.receive_contact_info_from_1k(response.text)
+            shops = parser.receive_contact_info_from_1k(response.text, placement=offer_url)
             all_contacts.extend(shops)
 
     with open(f"{result_folder}/contacts.json", "w", encoding="utf-8") as file:
