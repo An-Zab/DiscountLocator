@@ -7,6 +7,7 @@ import parser
 import json
 from bs4 import BeautifulSoup
 from utils import get_headers
+from utils import improved_request
 
 result_folder = "results"
 os.makedirs(result_folder, exist_ok=True)
@@ -32,9 +33,12 @@ def search_product(product):
     for url, params in urls:
         time.sleep(random.uniform(1,3))
         if 'onliner.by' in url:
-            response = requests.get(url, params=params)  # без headers
+            response = improved_request(url, params=params)  # без headers, т.к. онлайнер периодически ругается на хэдеры и не отдаёт инфу
         else:
-            response = requests.get(url, params=params, headers=get_headers())
+            response = improved_request(url, params=params, headers=get_headers())
+        if response is None:
+            print(f"Пропускаем из-за ошибки сети. Проблема возникла в {create_url.__name__} на этапе отправки поискового запроса")
+            continue
         print(f"Получил {response.url}, статус: {response.status_code}")
 
     
@@ -64,7 +68,11 @@ def search_product(product):
             params = params.copy()
             params['page'] = page_num
             time.sleep(random.uniform(1,3))
-            response = requests.get(url, params=params, headers=get_headers())
+            response = improved_request(url, params=params, headers=get_headers())
+            if response is None:
+                print(f"""Пропускаем из-за ошибки сети. Проблема возникла в {create_url.__name__} на этапе получения ответов с разных страниц. 
+                      Страница {page_num} урла {url}""")
+                continue
             print(f"Получил {response.url}, статус: {response.status_code}")
             
             with open(f"{result_folder}/{filename}_{page_num}_response.html", "w", encoding="utf-8") as file:
@@ -78,7 +86,7 @@ def search_product(product):
     for offer_url in offer_list[:7]:
         if '1k.by' in offer_url:
             time.sleep(random.uniform(1, 2))
-            response = requests.get(offer_url,headers=get_headers())
+            response = improved_request(offer_url,headers=get_headers())
             shops = parser.receive_contact_info_from_1k(response.text, placement=offer_url)
             all_contacts.extend(shops)
     

@@ -4,6 +4,7 @@ import json
 import requests
 from utils import get_headers
 from time import time
+from utils import improved_request
 
 def get_page_max_num(htmlpage):
     """Определяет число страниц-результатов поиска по классу paging__it"""
@@ -45,7 +46,10 @@ def receive_contact_info_from_1k(htmlpage, placement=''):
         if contacts:
             api_link = contacts.get('data-communicationinfourl') 
             full_url = "https://1k.by" + api_link
-            response = requests.get(full_url, headers=get_headers())
+            response = improved_request(full_url, headers=get_headers())
+            if response is None:
+                print(f"Пропускаем из-за ошибки сети. Проблема возникла в {receive_contact_info_from_1k.__name__} на этапе парсинга страницы 1k")
+                continue
             shop['shop_phones'] = list(set(re.findall(r'tel:(\+\d+)', response.text)))
             shop['shop_social_media'] = list(set(re.findall(r'[\w.]+@[\w.]+', response.text)))
         else:
@@ -93,7 +97,10 @@ def parse_onliner_search(htmlpage):
     return products
 
 def receive_contact_info_from_onliner(product_url, product_name='', placement=''):
-    server_response = requests.get(product_url)
+    server_response = improved_request(product_url)
+    if server_response is None:
+        print(f"Пропускаем из-за ошибки сети. Проблема возникла в {receive_contact_info_from_onliner.__name__} на этапе запроса к API онлайнера")
+        return []
     data = server_response.json()
     shops = data.get('shops', {})
     positions = data.get('positions', {}).get('primary', [])
