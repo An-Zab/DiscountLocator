@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Результаты поиска{% endblock %}
+
+{% block content %}
+    <h1>Результаты поиска</h1>
+    <table>
+        <tr>
+            <th>Товар</th>
+            <th>Магазин</th>
+            <th>Цена</th>
+            <th>Телефоны</th>
+        </tr>
+        {% for c in contacts %}
+        <tr>
+            <td>{{ c.product }}</td>
+            <td>{{ c.shop_name }}</td>
+            <td>{{ c.product_price }}</td>
+            <td>{{ c.shop_phones | join(', ') }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

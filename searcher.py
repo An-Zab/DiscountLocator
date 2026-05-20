@@ -55,13 +55,15 @@ def search_product(product):
                 all_contacts.extend(shops)
             continue
 
-
-        filename = url.split("//")[1].split("/")[0]
         #Сплитим URL, чтобы сделать понятное название сохраняемого файла
-        total_pages = parser.get_page_max_num(response.text)
+        filename = url.split("//")[1].split("/")[0]
         
-        with open(f"{result_folder}/{filename}_1_response.html", "w", encoding="utf-8") as file:
-                file.write(response.text)
+
+        #Обрезал колиечество страниц для теста
+        total_pages = min(parser.get_page_max_num(response.text), 2)
+        
+        # with open(f"{result_folder}/{filename}_1_response.html", "w", encoding="utf-8") as file:
+        #         file.write(response.text)
 
         offer_list.extend(parser.receive_offer_place(response.text))
         for page_num in range(2, total_pages + 1):
@@ -75,15 +77,15 @@ def search_product(product):
                 continue
             print(f"Получил {response.url}, статус: {response.status_code}")
             
-            with open(f"{result_folder}/{filename}_{page_num}_response.html", "w", encoding="utf-8") as file:
-                file.write(response.text)
-            offer_list.extend(parser.receive_offer_place(response.text))
+        #     with open(f"{result_folder}/{filename}_{page_num}_response.html", "w", encoding="utf-8") as file:
+        #         file.write(response.text)
+        #     offer_list.extend(parser.receive_offer_place(response.text))
 
-        with open(f"{result_folder}/offer_list.json", "w", encoding="utf-8") as file:
-            json.dump(offer_list, file, indent=2, ensure_ascii=False)
+        # with open(f"{result_folder}/offer_list.json", "w", encoding="utf-8") as file:
+        #     json.dump(offer_list, file, indent=2, ensure_ascii=False)
 
-    # Добавил срез списка для тестов
-    for offer_url in offer_list[:7]:
+    #Обрезал колиечество офферов со страницы для теста
+    for offer_url in offer_list[:2]:
         if '1k.by' in offer_url:
             time.sleep(random.uniform(1, 2))
             response = improved_request(offer_url,headers=get_headers())
@@ -100,5 +102,5 @@ def search_product(product):
         json.dump(all_contacts, file, indent=2, ensure_ascii=False)
 
     return offer_list, all_contacts
-test_result = search_product("gkrjegowe")
+test_result = search_product("iphone 17")
 # print(test_result)
