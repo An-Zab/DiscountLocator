@@ -37,7 +37,7 @@ def receive_contact_info_from_1k(htmlpage, placement=''):
         logo = seller.find('img', class_='seller__logo')
         shop['shop_name'] = logo['alt'].strip() 
         
-        price_tag = seller.find(class_='seller__price')
+        price_tag = seller.find(class_='seller__price') or seller.find(class_='seller__price-new')
         shop['product_price'] = price_tag.text.strip() if price_tag else 'Нет цены'
         shop['placement'] = placement
         

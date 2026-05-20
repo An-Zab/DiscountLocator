@@ -81,10 +81,16 @@ def search_product(product):
             response = requests.get(offer_url,headers=get_headers())
             shops = parser.receive_contact_info_from_1k(response.text, placement=offer_url)
             all_contacts.extend(shops)
+    
+    if not all_contacts:
+        all_contacts.append({
+            "message": f"По запросу - «{product}» - ничего не найдено",
+            "offertimestamp": int(time.time())
+        })
 
     with open(f"{result_folder}/contacts.json", "w", encoding="utf-8") as file:
         json.dump(all_contacts, file, indent=2, ensure_ascii=False)
 
     return offer_list, all_contacts
-test_result = search_product("macbook Air 15 M4 16/256")
+test_result = search_product("gkrjegowe")
 # print(test_result)
