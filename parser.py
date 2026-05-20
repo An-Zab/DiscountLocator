@@ -1,10 +1,9 @@
-# parser.py
-
 from bs4 import BeautifulSoup
 import re
 import json
 import requests
 from utils import get_headers
+from time import time
 
 def get_page_max_num(htmlpage):
     """Определяет число страниц-результатов поиска по классу paging__it"""
@@ -55,7 +54,7 @@ def receive_contact_info_from_1k(htmlpage, placement=''):
         
         shop_link = seller.find('a', class_='seller__link')
         shop['url'] = shop_link['href'] if shop_link else None
-
+        shop['offertimestamp'] = int(time())
         contact_info.append(shop)
 
     return contact_info
@@ -103,6 +102,7 @@ def receive_contact_info_from_onliner(product_url, product_name='', placement=''
     for pos in positions:
         shop_id = str(pos['shop_id'])
         shop = shops.get(shop_id, {})
+        offertime = int(time())
         
         shop_data = {
             'product': product_name,
@@ -112,6 +112,7 @@ def receive_contact_info_from_onliner(product_url, product_name='', placement=''
             'url': shop.get('html_url', ''),
             'shop_phones': shop.get('schema_phones', []),
             'shop_social_media': [],
+            'offertimestamp': offertime
         }
         contact_info.append(shop_data)
         
