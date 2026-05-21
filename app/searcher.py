@@ -1,15 +1,12 @@
-import requests
 import config
 import random
 import os
 import time
-import app.models.parser as parser
+import parser
 import json
-from bs4 import BeautifulSoup
-from utils import get_headers
-from utils import improved_request
+from utils import get_headers, improved_request
 
-result_folder = "app\results"
+result_folder = "results"
 os.makedirs(result_folder, exist_ok=True)
 
 

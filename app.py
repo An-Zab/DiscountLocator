@@ -1,6 +1,5 @@
 from flask import Flask, render_template
 import config
-
 from app.extensions import db
 from app.route.user import bp as user_bp
 
