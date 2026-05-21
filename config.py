@@ -1,3 +1,11 @@
+from secret_data import DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME
+
+
+config = {
+    'DATABASE_URI' : f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}",
+    'SECRET_KEY': 'super-secret'
+    }
+
 user_settings = {
     "User-Agent" : [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",

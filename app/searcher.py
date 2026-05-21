@@ -3,13 +3,13 @@ import config
 import random
 import os
 import time
-import parser
+import app.models.parser as parser
 import json
 from bs4 import BeautifulSoup
 from utils import get_headers
 from utils import improved_request
 
-result_folder = "results"
+result_folder = "app\results"
 os.makedirs(result_folder, exist_ok=True)
 
 
@@ -102,5 +102,5 @@ def search_product(product):
         json.dump(all_contacts, file, indent=2, ensure_ascii=False)
 
     return offer_list, all_contacts
-test_result = search_product("iphone 17")
+test_result = search_product("play station 5")
 # print(test_result)

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+
+<h1>Тестовый тест</h1>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Password</th>
+        <th>Telegram</th>
+        <th>Created</th>
+    </tr>
+
+    {% for user in users %}
+    <tr>
+        <td>{{ user.id }}</td>
+        <td>{{ user.username }}</td>
+        <td>{{ user.password_hash }}</td>
+        <td>{{ user.telegram_id }}</td>
+        <td>{{ user.created_at }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
