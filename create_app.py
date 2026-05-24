@@ -4,6 +4,7 @@ from app.extensions import db, login_manager
 from app.route.user import bp as user_bp
 from app.models.user import User
 from app.route.search import bp as search_bp
+from app.cron_worker import start_scheduler
 
 
 def create_app():
@@ -28,5 +29,7 @@ def create_app():
         return render_template("index.html")
     
     app.register_blueprint(search_bp)
+
+    start_scheduler(app)
 
     return app
