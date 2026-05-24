@@ -29,3 +29,13 @@
     border: 1px solid blue;
     border-radius: 5px;
 }
+
+
+.best-price {
+    background-color: #d4edda;
+}
+
+.best-price td {
+    color: #155724;
+    font-weight: bold;
+}

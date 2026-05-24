@@ -47,4 +47,26 @@ def search():
     db.session.commit()
 
     results = SearchResult.query.filter_by(search_id=history.id).all()
-    return render_template('results.html', query=query, results=results, contacts=all_contacts, searched_at=history.searched_at)
+
+
+
+    price_list = []
+    for item in results:
+        try:
+            price_str = item.product_price.replace('б.р.', '').replace(' ', '').replace(',', '.').strip()
+            price_list.append((float(price_str), item.id))
+        except:
+            pass
+
+    price_list.sort(key=lambda x: x[0])
+    top_offers = []
+    for item in price_list[:10]:   
+        top_offers.append(item[1])
+    bad_offers = [item[1] for item in price_list[-3:]]
+
+    if price_list:
+        medium_price = round(sum(p[0] for p in price_list) / len(price_list), 2)
+    else:
+        medium_price = 0
+
+    return render_template('results.html', query=query, results=results, contacts=all_contacts, searched_at=history.searched_at, top_offers=top_offers, bad_offers=bad_offers, medium_price=medium_price)

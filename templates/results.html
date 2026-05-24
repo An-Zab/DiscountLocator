@@ -5,6 +5,10 @@
 {% block content %}
     <h1>Результаты: «{{ query }}»</h1>
 
+    {% if medium_price %}
+        <p>Средняя цена: <strong>{{ medium_price }} б.р.</strong></p>
+    {% endif %}
+
     {% if results %}
         <table>
             <tr>
@@ -16,18 +20,18 @@
                 <th>Телефоны</th>
             </tr>
             {% for r in results %}
-            <tr>
-                <td>{{ r.product }}</td>
-                <td>{{ r.shop_name }}</td>
-                <td>{{ r.product_price }}</td>
-                <td>{{ searched_at.strftime('%d.%m.%Y %H:%M') }}</td>
-                <td>
-                    {% if r.placement %}
-                        <a href="{{ r.placement }}" target="_blank">Открыть</a>
-                    {% endif %}
-                </td>
-                <td>{{ r.shop_phones if r.shop_phones }}</td>
-            </tr>
+                <tr class="{% if r.id in top_offers %}best-price{% elif r.id in bad_offers %}worst-price{% endif %}">
+                    <td>{{ r.product }}</td>
+                    <td>{{ r.shop_name }}</td>
+                    <td>{{ r.product_price }}</td>
+                    <td>{{ searched_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                    <td>
+                        {% if r.placement %}
+                            <a href="{{ r.placement }}" target="_blank">Открыть</a>
+                        {% endif %}
+                    </td>
+                    <td>{{ r.shop_phones if r.shop_phones }}</td>
+                </tr>
             {% endfor %}
         </table>
     {% else %}
