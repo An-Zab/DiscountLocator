@@ -1,7 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, flash, url_for
-
 from app.extensions import db
-from app.models.user import User
 
 class SearchHistory(db.Model):
     __tablename__ = 'search_history'

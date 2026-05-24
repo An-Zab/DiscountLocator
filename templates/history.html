@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}История поиска{% endblock %}
+
+{% block content %}
+    <h1>История поиска</h1>
+
+    {% if searches %}
+        <table>
+            <tr>
+                <th>Запрос</th>
+                <th>Дата</th>
+                <th>Результаты</th>
+            </tr>
+            {% for s in searches %}
+            <tr>
+                <td>{{ s.query }}</td>
+                <td>{{ s.searched_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                <td>
+                    <a href="{{ url_for('search.view_results', search_id=s.id) }}">Смотреть</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>История пуста</p>
+    {% endif %}
+
+    <a href="{{ url_for('index') }}">← На главную</a>
+{% endblock %}

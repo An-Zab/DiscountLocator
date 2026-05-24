@@ -4,7 +4,7 @@ from secret_data import DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME, SECRET_
 config = {
     'DATABASE_URI' : f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}",
     'SECRET_KEY': SECRET_KEY,
-    'CLEAN_DELAY' : 120, # Записи старше этого лайфтама в сек удаляются при кроне
+    'CLEAN_DELAY' : 172800, # Записи старше этого лайфтама в сек удаляются при кроне
     'CRON_WORK_DELAY' : 20 # Интервал работы кроны
     }
 

@@ -9,6 +9,14 @@
         <p>Средняя цена: <strong>{{ medium_price }} б.р.</strong></p>
     {% endif %}
 
+    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+        <a href="{{ url_for('index') }}">← Новый поиск</a>
+        <form method="get" action="{{ url_for('search.search') }}">
+            <input type="hidden" name="q" value="{{ query }}">
+            <button type="submit">Обновить результаты</button>
+        </form>
+    </div>
+
     {% if results %}
         <table>
             <tr>
@@ -37,6 +45,4 @@
     {% else %}
         <p>Ничего не найдено</p>
     {% endif %}
-
-    <a href="{{ url_for('index') }}">← Новый поиск</a>
 {% endblock %}

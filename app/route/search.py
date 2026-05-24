@@ -4,6 +4,7 @@ from app.extensions import db
 from app.models.search_history import SearchHistory
 from app.models.search_result import SearchResult
 from app.searcher import search_product
+from sqlalchemy import desc
 
 bp = Blueprint('search', __name__)
 
@@ -70,3 +71,29 @@ def search():
         medium_price = 0
 
     return render_template('results.html', query=query, results=results, contacts=all_contacts, searched_at=history.searched_at, top_offers=top_offers, bad_offers=bad_offers, medium_price=medium_price)
+
+
+@bp.route('/history')
+@login_required
+def history():
+    searches = db.session.query(SearchHistory).filter(SearchHistory.user_id == current_user.id).order_by(desc(SearchHistory.searched_at)).all()
+    return render_template('history.html', searches=searches)
+
+@bp.route('/results/<int:search_id>', endpoint='view_results')
+@login_required
+def view_results(search_id):
+    history = db.session.get(SearchHistory, search_id)
+    if not history:
+        flash('Запись не найдена', 'error')
+        return redirect(url_for('search.history'))
+    if history.user_id != current_user.id:
+        flash('Нет доступа', 'error')
+        return redirect(url_for('index'))
+    results = SearchResult.query.filter_by(search_id=search_id).all()
+    return render_template('results.html', 
+        query=history.query, 
+        results=results, 
+        searched_at=history.searched_at,
+        top_offers=[],
+        bad_offers=[],
+        medium_price=0)
