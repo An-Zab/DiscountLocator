@@ -1,5 +1,5 @@
 import random
-import config
+from app.config import config, user_settings
 import time
 import requests
 from typing import Callable
@@ -7,7 +7,7 @@ from typing import Callable
 def get_headers():
     """Формирует случайную комбинацию хэдеров для запроса"""
     headers = {}
-    for key, value in config.user_settings.items():
+    for key, value in user_settings.items():
         headers[key] = random.choice(value)
     return headers
 

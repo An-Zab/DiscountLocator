@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Результаты поиска: {{ query }}{% endblock %}
+
+{% block content %}
+    <h1>Результаты: «{{ query }}»</h1>
+
+    {% if results %}
+        <table>
+            <tr>
+                <th>Товар</th>
+                <th>Магазин</th>
+                <th>Цена</th>
+                <th>Телефоны</th>
+            </tr>
+            {% for r in results %}
+            <tr>
+                <td>{{ r.product }}</td>
+                <td>{{ r.shop_name }}</td>
+                <td>{{ r.product_price }}</td>
+                <td>{{ r.shop_phones }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>Ничего не найдено</p>
+    {% endif %}
+
+    <a href="{{ url_for('index') }}">← Новый поиск</a>
+{% endblock %}

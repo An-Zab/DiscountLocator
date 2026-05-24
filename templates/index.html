@@ -4,6 +4,14 @@
 
 {% block content %}
     <h1>DiscountLocator</h1>
-    <p>Поиск скидок и цен в магазинах</p>
 
+    {% if current_user.is_authenticated %}
+        <p>Поиск скидок и цен в магазинах</p>
+        <form method="get" action="{{ url_for('search.search') }}">
+            <input type="text" name="q" placeholder="Что ищем?" required>
+            <button type="submit">Искать</button>
+        </form>
+    {% else %}
+        <p>Войдите, чтобы начать поиск</p>
+    {% endif %}
 {% endblock %}

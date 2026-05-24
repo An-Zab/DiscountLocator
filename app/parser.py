@@ -2,9 +2,9 @@ from bs4 import BeautifulSoup
 import re
 import json
 import requests
-from utils import get_headers
 from time import time
-from utils import improved_request
+from app.utils import get_headers
+from app.utils import improved_request
 
 def get_page_max_num(htmlpage):
     """Определяет число страниц-результатов поиска по классу paging__it"""

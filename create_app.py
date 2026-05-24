@@ -3,6 +3,7 @@ from app.config import config
 from app.extensions import db, login_manager
 from app.route.user import bp as user_bp
 from app.models.user import User
+from app.route.search import bp as search_bp
 
 
 def create_app():
@@ -25,5 +26,7 @@ def create_app():
     @app.route("/")
     def index():
         return render_template("index.html")
+    
+    app.register_blueprint(search_bp)
 
     return app

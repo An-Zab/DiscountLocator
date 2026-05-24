@@ -1,10 +1,10 @@
-import config
+from app.config import config, search_settings
 import random
 import os
 import time
-import parser
+from app import parser
 import json
-from utils import get_headers, improved_request
+from app.utils import get_headers, improved_request
 
 result_folder = "results"
 os.makedirs(result_folder, exist_ok=True)
@@ -18,7 +18,7 @@ def search_product(product):
     def create_url(product):
         """Формирует список кортежей (search_url, {params и изменённый keyword_param}) 
         для requests.get()"""
-        for key, value in config.search_settings.items():
+        for key, value in search_settings.items():
             params = value['params'].copy() 
             params[value['keyword_param']] = product 
             #Сделали копию params из search_settings и добавили в него строку keyword_param : product 
@@ -99,5 +99,5 @@ def search_product(product):
         json.dump(all_contacts, file, indent=2, ensure_ascii=False)
 
     return offer_list, all_contacts
-test_result = search_product("play station 5")
+# test_result = search_product("play station 5")
 # print(test_result)
