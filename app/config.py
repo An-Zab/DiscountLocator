@@ -1,9 +1,9 @@
-from secret_data import DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME
+from secret_data import DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME, SECRET_KEY
 
 
 config = {
     'DATABASE_URI' : f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}",
-    'SECRET_KEY': 'super-secret'
+    'SECRET_KEY': SECRET_KEY
     }
 
 user_settings = {

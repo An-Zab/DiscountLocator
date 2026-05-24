@@ -1,5 +1,5 @@
-.venv/
+venv/
 results/
 __pycache__/
 *.pyc
-secrets.py
+secret_data.py
