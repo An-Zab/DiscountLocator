@@ -11,6 +11,8 @@
                 <th>Товар</th>
                 <th>Магазин</th>
                 <th>Цена</th>
+                <th>Дата поиска</th>
+                <th>Ссылка</th>
                 <th>Телефоны</th>
             </tr>
             {% for r in results %}
@@ -18,7 +20,13 @@
                 <td>{{ r.product }}</td>
                 <td>{{ r.shop_name }}</td>
                 <td>{{ r.product_price }}</td>
-                <td>{{ r.shop_phones }}</td>
+                <td>{{ searched_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                <td>
+                    {% if r.placement %}
+                        <a href="{{ r.placement }}" target="_blank">Открыть</a>
+                    {% endif %}
+                </td>
+                <td>{{ r.shop_phones if r.shop_phones }}</td>
             </tr>
             {% endfor %}
         </table>

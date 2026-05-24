@@ -47,4 +47,4 @@ def search():
     db.session.commit()
 
     results = SearchResult.query.filter_by(search_id=history.id).all()
-    return render_template('results.html', query=query, results=results, contacts=all_contacts)
+    return render_template('results.html', query=query, results=results, contacts=all_contacts, searched_at=history.searched_at)
