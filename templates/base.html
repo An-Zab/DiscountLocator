@@ -2,23 +2,25 @@
 <html>
 <head>
     <title>{% block title %}DiscountLocator{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <header>
-        DiscountLocator
         <nav>
-            {% if current_user.is_authenticated %}
-                <span>Привет, {{ current_user.username }}!</span>
-                <a href="{{ url_for('user.logout') }}">Выйти</a>
-                <a href="{{ url_for('search.history') }}">История</a>
-            {% else %}
-                <a href="{{ url_for('user.login') }}">Вход</a>
-                <a href="{{ url_for('user.register') }}">Регистрация</a>
-            {% endif %}
+            <ul>
+                {% if current_user.is_authenticated %}
+                    <li><span>Привет, {{ current_user.username }}!</span></li>
+                    <li><a href="{{ url_for('search.history') }}">История</a></li>
+                    <li><a href="{{ url_for('user.logout') }}">Выйти</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('user.login') }}">Вход</a></li>
+                    <li><a href="{{ url_for('user.register') }}">Регистрация</a></li>
+                {% endif %}
+            </ul>
         </nav>
     </header>
-    
+
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -27,10 +29,12 @@
         {% endif %}
     {% endwith %}
 
-    <main>
+    <main class="container">
         {% block content %}{% endblock %}
     </main>
-    
-    <footer>DiscountLocator</footer>
+
+    <footer class="container" style="margin-top: 60px; text-align: center; color: #6b7280; font-size: 14px;">
+        DiscountLocator
+    </footer>
 </body>
 </html>

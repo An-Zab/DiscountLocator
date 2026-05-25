@@ -39,3 +39,11 @@
     color: #155724;
     font-weight: bold;
 }
+
+body {
+    padding-bottom: 40px;
+}
+
+.worst-price {
+    background: #a04d54;
+}

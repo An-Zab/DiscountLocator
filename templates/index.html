@@ -3,15 +3,15 @@
 {% block title %}Главная{% endblock %}
 
 {% block content %}
-    <h1>DiscountLocator</h1>
+    <h1 style="text-align: center;">DiscountLocator</h1>
 
     {% if current_user.is_authenticated %}
-        <p>Поиск скидок и цен в магазинах</p>
+        <p>Ищите товары по выгодным ценам</p>
         <form method="get" action="{{ url_for('search.search') }}">
             <input type="text" name="q" placeholder="Что ищем?" required>
             <button type="submit">Искать</button>
         </form>
     {% else %}
-        <p>Войдите, чтобы начать поиск</p>
+        <p style="text-align: center;">Войдите, чтобы начать поиск</p>
     {% endif %}
 {% endblock %}

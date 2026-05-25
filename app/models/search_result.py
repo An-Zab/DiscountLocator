@@ -12,5 +12,5 @@ class SearchResult(db.Model):
     shop_phones = db.Column(db.Text)
     shop_social_media = db.Column(db.Text)
     placement = db.Column(db.String(100))
-    url = db.Column(db.String(150))
+    url = db.Column(db.String(500))
     offertimestamp = db.Column(db.BigInteger)
