@@ -42,8 +42,20 @@
 
 body {
     padding-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
 }
 
 .worst-price {
     background: #a04d54;
+}
+
+footer {
+    margin-top: auto;
+}
+
+main {
+    flex: 1;
 }
